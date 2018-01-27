@@ -1,0 +1,57 @@
+#wholething {
+  position: fixed;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  top: 0px;
+  width: 100%;
+  bottom: 0vh;
+}
+
+#title {
+  width: 100%;
+  display: flex;
+  align-items: center;
+}
+
+#clock {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  /* align-items: center; */
+}
+
+#clockface {
+  margin-bottom: 10%;
+}
+
+#timebar {
+  display: flex;
+  justify-content: space-around;
+}
+
+.center {
+  display: flex;
+  justify-content: center;
+}
+
+h1 {
+  font-size: 12em;
+}
+
+h2 {
+  font-size: 5em;
+}
+
+h3 {
+  font-size: 3em;
+}
+
+h4 {
+  font-size: 4em;
+  text-align: center;
+}
+
+.relatives {
+  -webkit-transform: rotate(90deg);
+}
