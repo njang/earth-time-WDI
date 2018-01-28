@@ -7,7 +7,11 @@ const userSchema = new Schema({
 	    id: String,
 	    access_token: String,
 	    email: String
-  	}
+  	},
+	location: {
+		lat: Number,
+		lng: Number
+	}
 });
 
 module.exports = mongoose.model('User', userSchema);

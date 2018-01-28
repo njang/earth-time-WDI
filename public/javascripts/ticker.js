@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 let d = 0;
 let max = 5;
 const circleEmpty = $('<span>', {text: '&#9898;'});
@@ -22,5 +23,13 @@ const ticker = () => {
   }
   d++;
   debugger;
+=======
+let d = 1;
+const ticker = () => {
+  // let d = new Date();
+  // $('#demo').text(d.toLocaleTimeString());
+  $('#demo').text(d);
+  d++;
+>>>>>>> e418e34e560067270fb861e8458e4b356a240c03
 }
 setInterval(ticker ,846);
