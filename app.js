@@ -10,10 +10,49 @@ const cookieParser = require('cookie-parser');
 const User = require('./models/user');
 const favicon = require('serve-favicon');
 const ENV = require('./app-env');
+const findOrCreate = require('mongoose-findorcreate');
+const converter = require('./converter');
+const router = express.Router();
+// const db = require('/models');
+
+// Global Lat/Lng variables
+const Lat = converter.Lat
+const Lng = converter.Lng
+
+const earthtimeJson = converter.RawBeats
+// console.log(earthtimeJson);
 
 // from express generator
 const index = require('./routes/index');
 const users = require('./routes/users');
+
+// sets the api default to always be prefixed with /api
+app.use('/api', router);
+
+// default api text
+router.get('/', function(req, res) {
+  res.json({ message: 'hooray! welcome to our api!' });
+});
+
+// this contains the API with the Earth Time object
+router.get('/earthtime', function(req, res) {
+  res.json(earthtimeJson);
+});
+
+// render on views
+// app.get('/', (req, res) => {
+//   res.render('index', {
+//     beats: earthtimeJson,
+//     user: false
+//   })
+// })
+
+router.get('/users', function(req, res) {
+  res.json(users);
+})
+
+// Mongoose Setup
+mongoose.connect('mongodb://localhost:27017/earth-time');
 
 // Middleware
 app.use(cookieParser());
@@ -31,10 +70,11 @@ app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
 // Setting up the Passport Strategies
 const googleClientKey = ENV.GOOGLE_CLIENT_ID;
 const googleClientSecret = ENV.GOOGLE_CLIENT_SECRET;
+const googleMapsKey = ENV.GOOGLE_MAPS_KEY;
 const GoogleStrategy = require('passport-google-oauth').OAuth2Strategy;
 
-app.use('/', index);
-app.use('/users', users);
+// app.use('/', index);
+// app.use('/routes', users);
 
 // Use the GoogleStrategy within Passport.
 //   Strategies in Passport require a `verify` function, which accept
@@ -49,22 +89,26 @@ passport.use(new GoogleStrategy({
   function(accessToken, refreshToken, profile, done) {
         //check user table for anyone with a google ID of profile.id
         User.findOne({
+          // console.log("found a user");
             'google.id': profile.id
         }, function(err, user) {
             if (err) {
                 return done(err);
             }
-            //No user was found... so create a new user with values from Google (all the profile. stuff)
+            // console.log('No user was found... so create a new user with values from Google (all the profile. stuff)');
             if (!user) {
+              // console.log('not founds oozer');
                 user = new User({
-                    google: profile
+                    google: profile,
+                    'location.lat': Lat,
+                    'location.lng': Lng
                 });
                 user.save(function(err) {
                     if (err) console.log(err);
                     return done(err, user);
                 });
             } else {
-                //found user. Return
+                // console.log("found user. Return");
                 return done(err, user);
             }
         });
@@ -88,9 +132,23 @@ app.get('/auth/google/callback',
   passport.authenticate('google', { successRedirect: '/', failureRedirect: '/' }));
 
 // Logout
-app.get("/logout", function(req, res){
+app.get('/logout', function(req, res){
   req.logout();
   res.redirect("/")
+})
+
+// Home page
+app.get('/', (req, res) => {
+  res.render('index', {
+    beats: earthtimeJson,
+    user: req.user
+  })
+})
+
+// update database route
+app.put('/user/:id', (req, res) => {
+  console.log(req.body);
+  res.sendStatus(200)
 })
 
 // catch 404 and forward to error handler
